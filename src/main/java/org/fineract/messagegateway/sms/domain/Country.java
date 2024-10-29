@@ -18,6 +18,8 @@
  */
 package org.fineract.messagegateway.sms.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -34,15 +36,17 @@ public class Country extends AbstractPersistableCustom<Long> {
     private Long tenantId;
 
     @Column(name = "country_code", nullable = false)
-    private String countryCode ;
+    private String code;
 
     @Column(name = "name", nullable = false)
-    private String countryName;
+    private String name;
 
+    @JsonIgnore
     @Column(name = "created_on", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOnDate;
 
+    @JsonIgnore
     @Column(name = "last_modified_on", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedOnDate;
@@ -50,10 +54,10 @@ public class Country extends AbstractPersistableCustom<Long> {
     public Country() {
     }
 
-    public Country(Long tenantId, String countryCode, String countryName) {
+    public Country(Long tenantId, String code, String name) {
         this.tenantId = tenantId;
-        this.countryCode = countryCode;
-        this.countryName = countryName;
+        this.code = code;
+        this.name = name;
     }
 
     public Long getTenantId() {
@@ -64,20 +68,20 @@ public class Country extends AbstractPersistableCustom<Long> {
         this.tenantId = tenantId;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCode(String countryCode) {
+        this.code = countryCode;
     }
 
-    public String getCountryName() {
-        return countryName;
+    public String getName() {
+        return name;
     }
 
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
+    public void setName(String countryName) {
+        this.name = countryName;
     }
 
     public Date getCreatedOnDate() {
@@ -103,12 +107,13 @@ public class Country extends AbstractPersistableCustom<Long> {
         if (o == null || getClass() != o.getClass())
             return false;
         Country country = (Country) o;
-        return Objects.equals(id, country.id) && Objects.equals(tenantId, country.tenantId) && Objects.equals(countryCode, country.countryCode) && Objects.equals(countryName,
-                country.countryName);
+        return Objects.equals(id, country.id) && Objects.equals(tenantId, country.tenantId) && Objects.equals(code, country.code) && Objects.equals(
+                name,
+                country.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tenantId, countryCode, countryName);
+        return Objects.hash(id, tenantId, code, name);
     }
 }

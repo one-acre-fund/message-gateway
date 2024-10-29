@@ -31,5 +31,6 @@ CREATE TABLE m_country (
 -- Add country id on sms_bridge table
 ALTER TABLE m_sms_bridge
     ADD COLUMN country_id BIGINT(20),
+    MODIFY COLUMN country_code VARCHAR(5) NULL,
     ADD CONSTRAINT CTR_SMS_BRIDGE_COUNTR FOREIGN KEY (country_id) REFERENCES m_country (id);
 

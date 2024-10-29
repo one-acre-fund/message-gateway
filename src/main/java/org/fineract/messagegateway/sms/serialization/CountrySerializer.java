@@ -112,13 +112,13 @@ public class CountrySerializer {
 		 if (this.fromApiJsonHelper.parameterExists(CountryConstants.COUNTRY_NAME_PARAM_NAME, element)) {
 			 final String countryName = this.fromApiJsonHelper.extractStringNamed(CountryConstants.COUNTRY_NAME_PARAM_NAME, element);
 			 baseDataValidator.reset().parameter(CountryConstants.COUNTRY_NAME_PARAM_NAME).value(countryName).notBlank().notExceedingLengthOf(COUNTRY_NAME_DB_COLUMN_SIZE);
-			 country.setCountryName(countryName);
+			 country.setName(countryName);
 		 }
 		 
 		 if(this.fromApiJsonHelper.parameterExists(CountryConstants.COUNTRY_CODE_PARAM_NAME, element)) {
 			 final String countryCode = this.fromApiJsonHelper.extractStringNamed(CountryConstants.COUNTRY_CODE_PARAM_NAME, element);
 				baseDataValidator.reset().parameter(CountryConstants.COUNTRY_CODE_PARAM_NAME).value(countryCode).notBlank().notExceedingLengthOf(COUNTRY_CODE_DB_COLUMN_SIZE);
-				country.setCountryCode(countryCode);
+				country.setCode(countryCode);
 				
 		 }
 

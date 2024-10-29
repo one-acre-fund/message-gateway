@@ -15,8 +15,8 @@ public class CountryMapper {
 
         CountryResponse response = new CountryResponse();
         response.setId(country.getId());
-        response.setName(country.getCountryName());
-        response.setCountryCode(country.getCountryCode());
+        response.setName(country.getName());
+        response.setCountryCode(country.getCode());
         return response;
     }
 

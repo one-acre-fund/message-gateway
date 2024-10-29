@@ -39,8 +39,8 @@ class CountrySerializerTest {
         Country country = countrySerializer.validateCreate(json, tenant);
 
         assertNotNull(country);
-        assertEquals("TestCountry", country.getCountryName());
-        assertEquals("TC", country.getCountryCode());
+        assertEquals("TestCountry", country.getName());
+        assertEquals("TC", country.getCode());
     }
 
     /**
@@ -70,22 +70,22 @@ class CountrySerializerTest {
     void validateUpdate_withValidJson_updatesCountry() {
         String json = "{\"countryName\": \"UpdatedCountry\", \"countryCode\": \"UC\"}";
         Country country = new Country();
-        country.setCountryName("OldCountry");
-        country.setCountryCode("OC");
+        country.setName("OldCountry");
+        country.setCode("OC");
 
 
         countrySerializer.validateUpdate(json, country);
 
-        assertEquals("UpdatedCountry", country.getCountryName());
-        assertEquals("UC", country.getCountryCode());
+        assertEquals("UpdatedCountry", country.getName());
+        assertEquals("UC", country.getCode());
     }
 
     @Test
     void validateUpdate_withInvalidJson_throwsException() {
         String json = "{\"countryName\": \"\", \"countryCode\": \"\"}";
         Country country = new Country();
-        country.setCountryName("OldCountry");
-        country.setCountryCode("OC");
+        country.setName("OldCountry");
+        country.setCode("OC");
 
         assertThrows(PlatformApiDataValidationException.class, () -> {
             countrySerializer.validateUpdate(json, country);

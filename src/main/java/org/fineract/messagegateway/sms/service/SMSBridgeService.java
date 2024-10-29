@@ -21,6 +21,7 @@ package org.fineract.messagegateway.sms.service;
 import java.util.Collection;
 
 import org.fineract.messagegateway.service.SecurityService;
+import org.fineract.messagegateway.sms.domain.Country;
 import org.fineract.messagegateway.sms.domain.SMSBridge;
 import org.fineract.messagegateway.sms.exception.SMSBridgeNotFoundException;
 import org.fineract.messagegateway.sms.repository.SMSBridgeRepository;
@@ -35,28 +36,34 @@ public class SMSBridgeService {
 
 	private final SMSBridgeRepository smsBridgeRepository;
 
-	private final SmsBridgeSerializer smsBridgeService ;
+	private final SmsBridgeSerializer smsBridgeSerializer;
 	
 	private final SecurityService securityService ;
+
+	private final CountryService countryService;
 	
 	@Autowired
 	public SMSBridgeService(final SMSBridgeRepository smsBridgeRepository,
-			final SmsBridgeSerializer smsBridgeService,
-			final SecurityService securityService) {
+			final SmsBridgeSerializer smsBridgeSerializer,
+			final SecurityService securityService,
+			final CountryService countryService) {
 		this.smsBridgeRepository = smsBridgeRepository;
-		this.smsBridgeService = smsBridgeService ;
+		this.smsBridgeSerializer = smsBridgeSerializer ;
 		this.securityService = securityService ;
+		this.countryService = countryService;
 	}
 
-	public Collection<SMSBridge> retrieveProviderDetails(final String tenantId, final String tenantAppKey) {
+	public Collection<SMSBridge> retrieveProviderDetails(final String tenantId, final String tenantAppKey, String country) {
 		Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
-		return this.smsBridgeRepository.findByTenantId(tenant.getId());
+		return this.smsBridgeRepository.findByTenantIdAndCountryName(tenant.getId(), country);
 	}
 
 	@Transactional
 	public Long createSmsBridgeConfig(final String tenantId, final String tenantAppKey, final String json) {
 		Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
-		SMSBridge smsBridge = this.smsBridgeService.validateCreate(json, tenant) ;
+		SMSBridge smsBridge = this.smsBridgeSerializer.validateCreate(json, tenant) ;
+		Country smsBridgeCountry = countryService.retrieveCountryById(tenantId, tenantAppKey, smsBridge.getCountryId());
+		smsBridge.setCountry(smsBridgeCountry);
 		final SMSBridge newSMSmsBridge = this.smsBridgeRepository.save(smsBridge);
 		return newSMSmsBridge.getId();
 	}
@@ -68,7 +75,7 @@ public class SMSBridgeService {
 		if (bridge == null) {
 			throw new SMSBridgeNotFoundException(bridgeId);
 		}
-		this.smsBridgeService.validateUpdate(json, bridge);
+		this.smsBridgeSerializer.validateUpdate(json, bridge);
 		this.smsBridgeRepository.save(bridge);
 	}
 	

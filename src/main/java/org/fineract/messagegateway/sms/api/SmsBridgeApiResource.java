@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -74,8 +75,8 @@ public class SmsBridgeApiResource {
     
     @RequestMapping(method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<Collection<SMSBridge>> getAllSMSBridgeConfigs(@RequestHeader(MessageGatewayConstants.TENANT_IDENTIFIER_HEADER) final String tenantId,
-    		@RequestHeader(MessageGatewayConstants.TENANT_APPKEY_HEADER) final String appKey) {
-        Collection<SMSBridge> bridges = this.smsBridgeService.retrieveProviderDetails(tenantId, appKey) ;
+    		@RequestHeader(MessageGatewayConstants.TENANT_APPKEY_HEADER) final String appKey, @RequestParam("country") final String country) {
+        Collection<SMSBridge> bridges = this.smsBridgeService.retrieveProviderDetails(tenantId, appKey, country) ;
         return new ResponseEntity<>(bridges, HttpStatus.OK);
     }
 

@@ -23,8 +23,8 @@ class CountryMapperTest {
     @Test
     void mapToCountryResponse_withValidCountry_returnsCountryResponse() {
         Country country = new Country();
-        country.setCountryName("TestCountry");
-        country.setCountryCode("TC");
+        country.setName("TestCountry");
+        country.setCode("TC");
 
         CountryResponse response = countryMapper.mapToCountryResponse(country);
 
@@ -43,8 +43,8 @@ class CountryMapperTest {
     @Test
     void mapToCountryResponse_withCountryHavingNullFields_returnsCountryResponseWithNullFields() {
         Country country = new Country();
-        country.setCountryName(null);
-        country.setCountryCode(null);
+        country.setName(null);
+        country.setCode(null);
 
         CountryResponse response = countryMapper.mapToCountryResponse(country);
 

@@ -9,9 +9,10 @@ import org.fineract.messagegateway.sms.repository.CountryRepository;
 import org.fineract.messagegateway.sms.serialization.CountrySerializer;
 import org.fineract.messagegateway.tenants.domain.Tenant;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Service implementation for managing countries
@@ -29,6 +30,9 @@ public class CountryServiceImpl implements CountryService {
 
     private final CountryMapper countryMapper;
 
+    @Resource
+    private CountryService countryService;
+
     public CountryServiceImpl(final CountryRepository countryRepository,
             final CountrySerializer countrySerializer,
             final SecurityService securityService, final CountryMapper countryMapper) {
@@ -39,6 +43,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Transactional
     public CountryResponse createCountry(String tenantId, String tenantAppKey, String countryJson) {
         Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
         Country country = this.countrySerializer.validateCreate(countryJson, tenant) ;
@@ -47,6 +52,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Transactional
     public void updateCountry(String tenantId, String tenantAppKey, Long countryId, String country) {
         Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
         final Country countryToUpdate = this.countryRepository.findByIdAndTenantId(countryId, tenant.getId()) ;
@@ -58,6 +64,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Transactional
     public void deleteCountry(String tenantId, String tenantAppKey, Long countryId) {
         Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
         final Country country = this.countryRepository.findByIdAndTenantId(countryId, tenant.getId()) ;
@@ -68,18 +75,27 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<CountryResponse> getAllCountries(String tenantId, String tenantAppKey) {
         Tenant tenant = this.securityService.authenticate(tenantId, tenantAppKey) ;
-        return countryRepository.findByTenantId(tenant.getId()).stream().map(countryMapper::mapToCountryResponse).collect(Collectors.toList());
+        return countryRepository.findByTenantId(tenant.getId()).stream().map(countryMapper::mapToCountryResponse).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CountryResponse retrieveCountry(String tenantId, String appKey, Long countryId) {
+        Country country = countryService.retrieveCountryById(tenantId, appKey, countryId);
+        return countryMapper.mapToCountryResponse(country);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Country retrieveCountryById(String tenantId, String appKey, Long countryId) {
         Tenant tenant = this.securityService.authenticate(tenantId, appKey) ;
         Country country = this.countryRepository.findByIdAndTenantId(countryId, tenant.getId());
         if (country == null) {
             throw new CountryNotFoundException(countryId);
         }
-        return countryMapper.mapToCountryResponse(country);
+        return country;
     }
 }

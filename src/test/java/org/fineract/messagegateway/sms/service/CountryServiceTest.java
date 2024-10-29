@@ -127,8 +127,8 @@ class CountryServiceTest {
         String countryJson = "{\"countryName\": \"UpdatedCountry\", \"countryCode\": \"UC\"}";
 
         Country countryToUpdate = new Country();
-        countryToUpdate.setCountryName("OldCountry");
-        countryToUpdate.setCountryCode("OC");
+        countryToUpdate.setName("OldCountry");
+        countryToUpdate.setCode("OC");
 
         when(securityService.authenticate(tenantId, tenantAppKey)).thenReturn(tenant);
         when(countryRepository.findByIdAndTenantId(countryId, tenant.getId())).thenReturn(countryToUpdate);
@@ -179,8 +179,8 @@ class CountryServiceTest {
         String countryJson = "{\"countryName\": \"\", \"countryCode\": \"\"}";
 
         Country countryToUpdate = new Country();
-        countryToUpdate.setCountryName("OldCountry");
-        countryToUpdate.setCountryCode("OC");
+        countryToUpdate.setName("OldCountry");
+        countryToUpdate.setCode("OC");
 
         when(securityService.authenticate(tenantId, tenantAppKey)).thenReturn(tenant);
         when(countryRepository.findByIdAndTenantId(countryId, tenant.getId())).thenReturn(countryToUpdate);
@@ -295,8 +295,8 @@ class CountryServiceTest {
         Long countryId = 1L;
 
         Country country = new Country();
-        country.setCountryName("TestCountry");
-        country.setCountryCode("TC");
+        country.setName("TestCountry");
+        country.setCode("TC");
         CountryResponse countryResponse = new CountryResponse(countryId, "TestCountry", "TC");
 
         when(securityService.authenticate(tenantId, appKey)).thenReturn(tenant);

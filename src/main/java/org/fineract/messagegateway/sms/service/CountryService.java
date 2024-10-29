@@ -1,6 +1,7 @@
 package org.fineract.messagegateway.sms.service;
 
 import org.fineract.messagegateway.sms.data.CountryResponse;
+import org.fineract.messagegateway.sms.domain.Country;
 
 import java.util.Collection;
 
@@ -58,4 +59,14 @@ public interface CountryService {
      * @return the country
      */
     CountryResponse retrieveCountry(String tenantId, String appKey, Long countryId);
+
+    /**
+     * Retrieve a country by its identifier.
+     *
+     * @param tenantId the tenant identifier
+     * @param appKey the tenant app key
+     * @param countryId the country identifier
+     * @return the country
+     */
+    Country retrieveCountryById(String tenantId, String appKey, Long countryId);
 }

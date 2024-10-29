@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 public interface SMSBridgeRepository extends JpaRepository<SMSBridge, Long>, JpaSpecificationExecutor<SMSBridge> {
 
 	
-	public Collection<SMSBridge> findByTenantId(@Param("tenantId") final Long tenantId) ;
+	public Collection<SMSBridge> findByTenantIdAndCountryName( final Long tenantId,  final String countryName) ;
 	
 	public SMSBridge findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ; 
 }

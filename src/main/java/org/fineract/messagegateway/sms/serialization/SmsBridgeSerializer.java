@@ -66,15 +66,18 @@ public class SmsBridgeSerializer {
 		baseDataValidator.reset().parameter(SmsConstants.providername_paramname).value(providerName).notBlank();
 		 
 		final String countryCode = this.fromApiJsonHelper.extractStringNamed(SmsConstants.countrycode_paramname, element);
-		baseDataValidator.reset().parameter(SmsConstants.countrycode_paramname).value(countryCode).notBlank();
+		baseDataValidator.reset().parameter(SmsConstants.countrycode_paramname).value(countryCode);
 		
 		final String providerKey = this.fromApiJsonHelper.extractStringNamed(SmsConstants.providerkey_paramname, element);
 		baseDataValidator.reset().parameter(SmsConstants.providerkey_paramname).value(providerKey).notBlank();
 		
 		final String providerDescription = this.fromApiJsonHelper.extractStringNamed(SmsConstants.providerdescription_paramname, element);
 		baseDataValidator.reset().parameter(SmsConstants.providerdescription_paramname).value(providerDescription).notBlank();
+
+		final Long countryId = this.fromApiJsonHelper.extractLongNamed(SmsConstants.COUNTRY_ID_PARAM_NAME, element);
+		baseDataValidator.reset().parameter(SmsConstants.COUNTRY_ID_PARAM_NAME).value(countryId).notNull();
 		
-		SMSBridge bridge = new SMSBridge(tenant.getId(), phoneNumber, providerName, providerKey, countryCode, providerDescription) ;
+		SMSBridge bridge = new SMSBridge(tenant.getId(), phoneNumber, providerName, providerKey, countryCode, providerDescription, countryId) ;
 		
 		JsonArray configParams = this.fromApiJsonHelper.extractJsonArrayNamed(SmsConstants.bridgeconfigurations_paramname, element);
 		baseDataValidator.reset().parameter(SmsConstants.bridgeconfigurations_paramname).value(configParams).jsonArrayNotEmpty();
