@@ -91,7 +91,7 @@ jobs:
           docker push oaftech.azurecr.io/oneacrefund/message-gateway:${{ env.IMAGE_TAGS }}      
         
       - name: Publish configuration package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4.2
         if:  ${{ env.SHOULD_PUBLISH == 'true'}}
         with:
           name: message-gateway
