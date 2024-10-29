@@ -132,6 +132,12 @@ public class SmsBridgeSerializer {
 				bridge.setCountryCode(countryCode);
 				
 		 }
+
+		if(this.fromApiJsonHelper.parameterExists(SmsConstants.COUNTRY_ID_PARAM_NAME, element)) {
+			final Long countryId = this.fromApiJsonHelper.extractLongNamed(SmsConstants.COUNTRY_ID_PARAM_NAME, element);
+			baseDataValidator.reset().parameter(SmsConstants.COUNTRY_ID_PARAM_NAME).value(countryId).notNull();
+			bridge.setCountryId(countryId);
+		}
 		 
 		 if (this.fromApiJsonHelper.parameterExists(SmsConstants.bridgeconfigurations_paramname, element)) {
 			 JsonArray configParams = this.fromApiJsonHelper.extractJsonArrayNamed(SmsConstants.bridgeconfigurations_paramname, element);

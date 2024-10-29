@@ -19,6 +19,7 @@
 package org.fineract.messagegateway.sms.service;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.fineract.messagegateway.service.SecurityService;
 import org.fineract.messagegateway.sms.domain.Country;
@@ -76,6 +77,12 @@ public class SMSBridgeService {
 			throw new SMSBridgeNotFoundException(bridgeId);
 		}
 		this.smsBridgeSerializer.validateUpdate(json, bridge);
+
+		if(Objects.nonNull(bridge.getCountryId())){
+			Country smsBridgeCountry = countryService.retrieveCountryById(tenantId, tenantAppKey, bridge.getCountryId());
+			bridge.setCountry(smsBridgeCountry);
+		}
+
 		this.smsBridgeRepository.save(bridge);
 	}
 	
