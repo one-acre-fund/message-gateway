@@ -18,9 +18,30 @@
  */
 package org.fineract.messagegateway.exception;
 
-import org.springframework.stereotype.Service;
+import org.fineract.messagegateway.helpers.ApiGlobalErrorResponse;
+import org.fineract.messagegateway.helpers.PlatformApiDataValidationExceptionMapper;
+import org.fineract.messagegateway.helpers.PlatformResourceNotFoundExceptionMapper;
+import org.fineract.messagegateway.helpers.UnsupportedParameterExceptionMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@Service
+@ControllerAdvice
 public class MessageGatewayExceptionHandler {
+
+    @ExceptionHandler({ AbstractPlatformResourceNotFoundException.class})
+    public ResponseEntity<ApiGlobalErrorResponse> handleAbstractPlatformResourceNotFoundException(AbstractPlatformResourceNotFoundException e) {
+        return PlatformResourceNotFoundExceptionMapper.toResponse(e) ;
+    }
+
+    @ExceptionHandler({PlatformApiDataValidationException.class})
+    public ResponseEntity<ApiGlobalErrorResponse> handlePlatformApiDataValidationException(PlatformApiDataValidationException e) {
+        return PlatformApiDataValidationExceptionMapper.toResponse(e) ;
+    }
+
+    @ExceptionHandler({UnsupportedParameterException.class})
+    public ResponseEntity<ApiGlobalErrorResponse> handleUnsupportedParameterException(UnsupportedParameterException e) {
+        return UnsupportedParameterExceptionMapper.toResponse(e) ;
+    }
 
 }
