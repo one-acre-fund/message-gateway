@@ -297,18 +297,15 @@ class CountryServiceTest {
         Country country = new Country();
         country.setName("TestCountry");
         country.setCode("TC");
-        CountryResponse countryResponse = new CountryResponse(countryId, "TestCountry", "TC");
 
         when(securityService.authenticate(tenantId, appKey)).thenReturn(tenant);
         when(countryRepository.findByIdAndTenantId(countryId, tenant.getId())).thenReturn(country);
-        when(countryMapper.mapToCountryResponse(country)).thenReturn(countryResponse);
 
-        CountryResponse response = countryService.retrieveCountry(tenantId, appKey, countryId);
+        Country response = countryService.retrieveCountryById(tenantId, appKey, countryId);
 
         assertNotNull(response);
-        assertEquals(countryId, response.getId());
         assertEquals("TestCountry", response.getName());
-        assertEquals("TC", response.getCountryCode());
+        assertEquals("TC", response.getCode());
     }
 
     @Test
@@ -321,7 +318,7 @@ class CountryServiceTest {
         when(securityService.authenticate(tenantId, appKey)).thenThrow(new TenantNotFoundException(tenantId, appKey));
 
         assertThrows(TenantNotFoundException.class, () -> {
-            countryService.retrieveCountry(tenantId, appKey, countryId);
+            countryService.retrieveCountryById(tenantId, appKey, countryId);
         });
     }
 
@@ -336,7 +333,7 @@ class CountryServiceTest {
         when(countryRepository.findByIdAndTenantId(countryId, tenant.getId())).thenReturn(null);
 
         assertThrows(CountryNotFoundException.class, () -> {
-            countryService.retrieveCountry(tenantId, appKey, countryId);
+            countryService.retrieveCountryById(tenantId, appKey, countryId);
         });
     }
 }
