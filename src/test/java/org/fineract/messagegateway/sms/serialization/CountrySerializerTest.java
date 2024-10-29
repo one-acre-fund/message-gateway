@@ -51,6 +51,10 @@ class CountrySerializerTest {
     static Stream<Arguments> invalidCreateCountryJsonProvider() {
 
         return Stream.of(
+                // No country name
+                arguments("{\"countryCode\": \"\"}"),
+                // No country code
+                arguments("{\"countryName\": \"\"}"),
                 // Blank country name & country code
                 arguments("{\"countryName\": \"\", \"countryCode\": \"\"}"),
                 // Blank country code
@@ -66,9 +70,23 @@ class CountrySerializerTest {
         assertThrows(PlatformApiDataValidationException.class, () -> countrySerializer.validateCreate(json, tenant));
     }
 
-    @Test
-    void validateUpdate_withValidJson_updatesCountry() {
-        String json = "{\"countryName\": \"UpdatedCountry\", \"countryCode\": \"UC\"}";
+    /**
+     * Method that generate arguments for update country with valid JSON
+     *
+     * @return a set of test arguments
+     */
+    static Stream<Arguments> validUpdateCountryJsonProvider() {
+
+        return Stream.of(
+                arguments("{\"countryName\": \"UpdatedCountry\", \"countryCode\": \"UC\"}"),
+
+                arguments("{\"countryName\": \"UpdatedCountry\", \"countryCode\": \"UC\", \"tenantId\": \"1\"}")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("validUpdateCountryJsonProvider")
+    void validateUpdate_withValidJson_updatesCountry(String json) {
         Country country = new Country();
         country.setName("OldCountry");
         country.setCode("OC");
