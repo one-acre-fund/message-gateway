@@ -128,7 +128,7 @@ public class SmsBridgeSerializer {
 		 
 		 if(this.fromApiJsonHelper.parameterExists(SmsConstants.countrycode_paramname, element)) {
 			 final String countryCode = this.fromApiJsonHelper.extractStringNamed(SmsConstants.countrycode_paramname, element);
-				baseDataValidator.reset().parameter(SmsConstants.countrycode_paramname).value(countryCode).notBlank();
+				baseDataValidator.reset().parameter(SmsConstants.countrycode_paramname).value(countryCode);
 				bridge.setCountryCode(countryCode);
 				
 		 }
