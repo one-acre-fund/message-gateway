@@ -1,5 +1,8 @@
 Release Notes
 
+## OAF Version 1.0.2-mifos-1.0.0
+        * [SER-3203] - Add support of country during SMS bridge configuration
+
 ## OAF Version 1.0.1-mifos-1.0.0
         * [SER-2537] - Infobip Provider - Add support of using dynamic base URL and use of custom prefix authorization headers 
 
