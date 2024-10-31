@@ -21,12 +21,8 @@ package org.fineract.messagegateway.sms.api;
 import java.util.Collection;
 
 import org.fineract.messagegateway.constants.MessageGatewayConstants;
-import org.fineract.messagegateway.exception.PlatformApiDataValidationException;
-import org.fineract.messagegateway.exception.UnsupportedParameterException;
 import org.fineract.messagegateway.helpers.ApiGlobalErrorResponse;
-import org.fineract.messagegateway.helpers.PlatformApiDataValidationExceptionMapper;
 import org.fineract.messagegateway.helpers.PlatformResourceNotFoundExceptionMapper;
-import org.fineract.messagegateway.helpers.UnsupportedParameterExceptionMapper;
 import org.fineract.messagegateway.sms.domain.SMSBridge;
 import org.fineract.messagegateway.sms.exception.SMSBridgeNotFoundException;
 import org.fineract.messagegateway.sms.service.SMSBridgeService;
@@ -39,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -78,8 +75,8 @@ public class SmsBridgeApiResource {
     
     @RequestMapping(method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<Collection<SMSBridge>> getAllSMSBridgeConfigs(@RequestHeader(MessageGatewayConstants.TENANT_IDENTIFIER_HEADER) final String tenantId,
-    		@RequestHeader(MessageGatewayConstants.TENANT_APPKEY_HEADER) final String appKey) {
-        Collection<SMSBridge> bridges = this.smsBridgeService.retrieveProviderDetails(tenantId, appKey) ;
+    		@RequestHeader(MessageGatewayConstants.TENANT_APPKEY_HEADER) final String appKey, @RequestParam("country") final String country) {
+        Collection<SMSBridge> bridges = this.smsBridgeService.retrieveProviderDetails(tenantId, appKey, country) ;
         return new ResponseEntity<>(bridges, HttpStatus.OK);
     }
 
@@ -89,16 +86,6 @@ public class SmsBridgeApiResource {
     		@PathVariable("bridgeId") final Long bridgeId) {
         SMSBridge bridge = this.smsBridgeService.retrieveSmsBridge(tenantId, appKey, bridgeId);
 		return new ResponseEntity<>(bridge, HttpStatus.OK);
-    }
-    
-    @ExceptionHandler({PlatformApiDataValidationException.class})
-    public ResponseEntity<ApiGlobalErrorResponse> handlePlatformApiDataValidationException(PlatformApiDataValidationException e) {
-    	return PlatformApiDataValidationExceptionMapper.toResponse(e) ;
-    }
-    
-    @ExceptionHandler({UnsupportedParameterException.class})
-    public ResponseEntity<ApiGlobalErrorResponse> handleUnsupportedParameterException(UnsupportedParameterException e) {
-    	return UnsupportedParameterExceptionMapper.toResponse(e) ;
     }
     
     @ExceptionHandler({SMSBridgeNotFoundException.class})

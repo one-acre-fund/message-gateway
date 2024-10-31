@@ -1,6 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '2.5.6'
+        jacocoVersion = '0.8.11'
     }
 
     repositories {
@@ -15,8 +16,10 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'idea'
+    id 'org.sonarqube' version '4.4.1.3373'
     
     id 'eclipse'
+    id 'jacoco'
     // Gradle license plugin switched to an obscure plugin
     // because the popular plugin stopped working with all recent gradle versions
     // https://github.com/hierynomus/license-gradle-plugin/issues/179
@@ -24,7 +27,7 @@ plugins {
 }
 
 
-sourceCompatibility = '11'
+sourceCompatibility = JavaVersion.VERSION_17
 
 if (project.hasProperty('profile')
         && project.getProperty('profile') == 'deployable') {
@@ -70,4 +73,37 @@ dependencies {
 
 wrapper {
     gradleVersion = '7.3'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+// Configuration for the sonarqube plugin is now in GitHub Actions
+sonar {
+    properties {
+        property("sonar.projectKey", "one-acre-fund_message-gateway")
+        property("sonar.organization", "one-acre-fund")
+        property("sonar.token", System.getenv("SONAR_TOKEN"))
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.projectBaseDir", "${project.projectDir}")
+        property("sonar.java.binaries", "${project.projectDir}/build/classes/java/main")
+        property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml")
+        property("sonar.newCode.period", "previous_version")
+        property("sonar.newCode.referenceBranch", "main")
+    }
+}
+
+jacoco {
+    toolVersion = jacocoVersion
+    reportsDirectory = file("$buildDir/reports/jacoco")
+}
+
+jacocoTestReport {
+    reports {
+        html.required = true
+        xml.required = true
+        html.destination file("${buildDir}/code-coverage")
+    }
 }

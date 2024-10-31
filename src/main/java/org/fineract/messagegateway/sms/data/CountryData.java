@@ -16,21 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.fineract.messagegateway.sms.repository;
+package org.fineract.messagegateway.sms.data;
 
-import java.util.Collection;
+/**
+ * CountryData class is used to store a country details.
+ *
+ */
+public class CountryData {
 
-import org.fineract.messagegateway.sms.domain.SMSBridge;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+    private final String name;
+    private final String countryCode;
 
-@Repository
-public interface SMSBridgeRepository extends JpaRepository<SMSBridge, Long>, JpaSpecificationExecutor<SMSBridge> {
+    public CountryData(final String name, final String countryCode) {
+        this.name = name;
+        this.countryCode = countryCode;
+    }
 
-	
-	public Collection<SMSBridge> findByTenantIdAndCountryName( final Long tenantId,  final String countryName) ;
-	
-	public SMSBridge findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ; 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getCountryCode() {
+        return this.countryCode;
+    }
+
 }

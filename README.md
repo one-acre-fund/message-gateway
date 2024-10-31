@@ -26,6 +26,17 @@ war file can be found in build/libs
 	}
 	
  This API will return an unique tenant app key. This key should not be shared with others. 
+
+#### Create country with http://host:9191/country
+    method: POST
+    HEADERS:
+ 		Fineract-Platform-TenantId:tenantId
+ 		Fineract-Tenant-App-Key:
+ 	Request Body:
+ 	{
+        "countryCode": "xx",
+        "countryName": "Country Name"
+    }
  
 #### Create Twilio SMS Bridge with http://host:9191/smsbridges
  	method: POST

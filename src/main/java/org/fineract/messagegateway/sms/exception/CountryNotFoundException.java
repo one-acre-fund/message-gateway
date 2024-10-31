@@ -16,21 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.fineract.messagegateway.sms.repository;
+package org.fineract.messagegateway.sms.exception;
 
-import java.util.Collection;
+import org.fineract.messagegateway.exception.AbstractPlatformResourceNotFoundException;
 
-import org.fineract.messagegateway.sms.domain.SMSBridge;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+public class CountryNotFoundException extends AbstractPlatformResourceNotFoundException{
 
-@Repository
-public interface SMSBridgeRepository extends JpaRepository<SMSBridge, Long>, JpaSpecificationExecutor<SMSBridge> {
-
-	
-	public Collection<SMSBridge> findByTenantIdAndCountryName( final Long tenantId,  final String countryName) ;
-	
-	public SMSBridge findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ; 
+	public CountryNotFoundException(final Long providerId) {
+        super("error.msg.country.id.invalid", "Country with identifier " + providerId + " does not exist", providerId);
+    }
 }

@@ -28,10 +28,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="m_sms_bridge")
@@ -48,7 +51,7 @@ public class SMSBridge extends AbstractPersistableCustom<Long> {
 	private String providerName;
 	
 	@com.fasterxml.jackson.annotation.JsonIgnore
-	@Column(name = "country_code", nullable = false)
+	@Column(name = "country_code")
 	private String countryCode ; 
 	
 	@Column(name = "description", nullable = false)
@@ -70,6 +73,14 @@ public class SMSBridge extends AbstractPersistableCustom<Long> {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "bridge", orphanRemoval = true, fetch = FetchType.EAGER)
 	public Collection<SMSBridgeConfig> bridgeConfigurations = new ArrayList<>();
 
+	@com.fasterxml.jackson.annotation.JsonIgnore
+	@Transient
+	public Long countryId;
+
+	@ManyToOne
+	@JoinColumn(name = "country_id", nullable = true)
+	public Country country;
+
 	public SMSBridge() {
 		
 	}
@@ -78,13 +89,14 @@ public class SMSBridge extends AbstractPersistableCustom<Long> {
 		this.tenantId = tenantId ;
 	}
 	
-	public SMSBridge(final Long tenantId, final String phoneNo, final String providerName, final String providerKey, final String countryCode, final String providerDescription) {
+	public SMSBridge(final Long tenantId, final String phoneNo, final String providerName, final String providerKey, final String countryCode, final String providerDescription, final Long countryId) {
 		this.tenantId = tenantId ;
 		this.phoneNo = phoneNo ;
 		this.providerName = providerName ;
 		this.providerKey = providerKey ;
 		this.countryCode = countryCode ;
 		this.providerDescription = providerDescription ;
+		this.countryId = countryId;
 	}
 	
 	public void setTenantId(final Long tenantId) {
@@ -118,7 +130,23 @@ public class SMSBridge extends AbstractPersistableCustom<Long> {
 	public String getCountryCode() {
 		return this.countryCode ;
 	}
-	
+
+	public Long getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Long countryId) {
+		this.countryId = countryId;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+	}
+
 	public void setCountryCode(final String countryCode) {
 		this.countryCode = countryCode ;
 	}

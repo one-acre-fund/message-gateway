@@ -16,21 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.fineract.messagegateway.sms.repository;
+package org.fineract.messagegateway.sms.constants;
 
-import java.util.Collection;
+import java.util.Set;
 
-import org.fineract.messagegateway.sms.domain.SMSBridge;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+/**
+ * The {@link CountryConstants} is a constant class that contains all the constants used in the country module.
+ */
+public class CountryConstants{
 
-@Repository
-public interface SMSBridgeRepository extends JpaRepository<SMSBridge, Long>, JpaSpecificationExecutor<SMSBridge> {
+	private CountryConstants() {
+		// Do nothing
+	}
 
-	
-	public Collection<SMSBridge> findByTenantIdAndCountryName( final Long tenantId,  final String countryName) ;
-	
-	public SMSBridge findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ; 
+	public static final String TENANT_ID_PARAM_NAME = "tenantId";
+
+	public static final String COUNTRY_CODE_PARAM_NAME = "countryCode" ;
+
+	public static final String COUNTRY_NAME_PARAM_NAME = "countryName" ;
+
+	public static final int COUNTRY_CODE_DB_COLUMN_SIZE = 3;
+
+	public static final int COUNTRY_NAME_DB_COLUMN_SIZE = 50;
+
+	public static final Set<String> SUPPORTED_PARAMETERS = Set.of(TENANT_ID_PARAM_NAME,
+			COUNTRY_CODE_PARAM_NAME, COUNTRY_NAME_PARAM_NAME);
 }

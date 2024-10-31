@@ -18,19 +18,24 @@
  */
 package org.fineract.messagegateway.sms.repository;
 
-import java.util.Collection;
-
-import org.fineract.messagegateway.sms.domain.SMSBridge;
+import org.fineract.messagegateway.sms.domain.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+
+/**
+ * Spring Data JPA repository for the Country entity.
+ *
+ * @author amy.muhimpundu
+ */
 @Repository
-public interface SMSBridgeRepository extends JpaRepository<SMSBridge, Long>, JpaSpecificationExecutor<SMSBridge> {
+public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpecificationExecutor<Country> {
 
 	
-	public Collection<SMSBridge> findByTenantIdAndCountryName( final Long tenantId,  final String countryName) ;
+	public Collection<Country> findByTenantId(@Param("tenantId") final Long tenantId) ;
 	
-	public SMSBridge findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ; 
+	public Country findByIdAndTenantId(@Param("id") final Long id, @Param("tenantId") final Long tenantId) ;
 }
