@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:17
 EXPOSE 9191
 
 COPY build/libs/*.jar .
