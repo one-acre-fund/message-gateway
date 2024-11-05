@@ -1,6 +1,6 @@
 ---
 name: message-gateway
-run-name: message-gatewayd-${{ github.ref_name }}-${{ github.run_number }}
+run-name: message-gateway-${{ github.ref_name }}-${{ github.run_number }}
 
 on:
   push:
