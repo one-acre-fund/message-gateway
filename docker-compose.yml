@@ -5,7 +5,7 @@ services:
   message-gateway:
     build:
       context: .
-    image: oaftech.azurecr.io/oneacrefund/message-gateway:${MESSAGE_GATEWAY_IMAGE_TAGS}
+    image: ${IMAGE_REGISTRY}${IMAGE_REPOSITORY:-oneacrefund/message-gateway}:${IMAGE_TAG:-local}
     ports:
       - 9191:9191
     environment:
