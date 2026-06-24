@@ -17,11 +17,16 @@ on:
     - cron: '0 0 * * *'
 
 env:
+  REGISTRY_PROVIDER: ${{ vars.REGISTRY_PROVIDER != '' && vars.REGISTRY_PROVIDER || 'ecr' }}
+  IMAGE_REPOSITORY: oneacrefund/message-gateway
   SHOULD_PUBLISH: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' ||  github.ref == 'refs/heads/develop' || startsWith(github.ref , 'refs/heads/release') }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4.2.0
@@ -56,7 +61,7 @@ jobs:
           echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
 
       - name: Configure Gradle caching
-        uses: actions/cache@v4.1.1
+        uses: actions/cache@v4.2.4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -66,23 +71,63 @@ jobs:
         run: |
           ./gradlew bootJar --info --build-cache
 
-      - name: Build  docker-compose
-        run: |
-          MESSAGE_GATEWAY_IMAGE_TAGS=${{ env.IMAGE_TAGS }} docker compose -f docker-compose.yml build
-      
-      - name: Login to Azure registry
-        uses: docker/login-action@v3.0.0
-        if: ${{ env.SHOULD_PUBLISH == 'true'}}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'ecr' }}
         with:
-          registry: oaftech.azurecr.io
+          role-to-assume: ${{ vars.ECR_REGISTRY_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'ecr' }}
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repository exists
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'ecr' }}
+        run: |
+          if aws ecr describe-repositories --repository-names "${{ env.IMAGE_REPOSITORY }}" >/dev/null 2>&1; then
+            echo "ECR repository '${{ env.IMAGE_REPOSITORY }}' already exists"
+          else
+            echo "Creating ECR repository '${{ env.IMAGE_REPOSITORY }}'..."
+            aws ecr create-repository \
+              --repository-name "${{ env.IMAGE_REPOSITORY }}" \
+              --image-scanning-configuration scanOnPush=true
+          fi
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3.5.0
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'acr' }}
+        with:
+          registry: ${{ vars.ACR_REGISTRY }}
           username: ${{ vars.ACR_PULL_USERNAME }}
           password: ${{ secrets.ACR_PULL_PASSWORD }}
-      
-      - name: Push image to registry
-        if:  ${{ env.SHOULD_PUBLISH == 'true'}}
+
+      - name: Build Docker image
         run: |
-          docker push oaftech.azurecr.io/oneacrefund/message-gateway:${{ env.IMAGE_TAGS }}      
-        
+          if [[ "${{ env.SHOULD_PUBLISH }}" != 'true' ]]; then
+            IMAGE="${{ env.IMAGE_REPOSITORY }}"
+          elif [[ "${{ env.REGISTRY_PROVIDER }}" == 'ecr' ]]; then
+            IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_REPOSITORY }}"
+          else
+            IMAGE="${{ vars.ACR_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}"
+          fi
+          docker build . -t "${IMAGE}:${{ env.IMAGE_TAGS }}"
+
+      - name: Push image to Amazon ECR
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'ecr' }}
+        run: |
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_REPOSITORY }}"
+          TAG="${{ env.IMAGE_TAGS }}"
+          docker push "${IMAGE}:${TAG}"
+          docker tag "${IMAGE}:${TAG}" "${IMAGE}:latest"
+          docker push "${IMAGE}:latest"
+
+      - name: Push image to Azure Container Registry
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.REGISTRY_PROVIDER == 'acr' }}
+        run: |
+          docker push ${{ vars.ACR_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAGS }}
+
       - name: Publish configuration package
         uses: actions/upload-artifact@v4.4.2
         if:  ${{ env.SHOULD_PUBLISH == 'true'}}
@@ -108,14 +153,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4.1.1
+        uses: actions/cache@v4.2.4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Configure Gradle caching
-        uses: actions/cache@v4.1.1
+        uses: actions/cache@v4.2.4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}

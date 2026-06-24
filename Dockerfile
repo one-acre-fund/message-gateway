@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM eclipse-temurin:17
 EXPOSE 9191
 
 COPY build/libs/*.jar /app/message-gateway.jar
