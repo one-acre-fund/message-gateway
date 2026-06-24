@@ -2,19 +2,38 @@ version: "3.7"
 
 services:
 
+  operations-mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: messagegateway
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   message-gateway:
     build:
       context: .
-    image: ${IMAGE_REGISTRY:-}${IMAGE_REGISTRY:+/}${IMAGE_REPOSITORY:-oneacrefund/message-gateway}:${IMAGE_TAG:-local}
+    image: ${IMAGE_REGISTRY}${IMAGE_REPOSITORY:-oneacrefund/message-gateway}:${IMAGE_TAG:-local}
     ports:
       - 9191:9191
+    depends_on:
+      operations-mysql:
+        condition: service_healthy
     environment:
       - LOGGING_LEVEL_ROOT=INFO
-      - SPRING_DATASOURCE_URL=jdbc:mysql:thin://operationsmysql:3306/messagegateway
+      - SPRING_DATASOURCE_URL=jdbc:mysql://operations-mysql:3306/messagegateway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - MYSQL_HOST=operations-mysql
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
       - CALLBACKCONFIG_HOST=
       - HOSTCONFIG_HOST=
-      - MYSQL_PASSWORD=
-      - MYSQL_USERNAME=
       - PROVIDERKEYS_TELERIVETAPIKEY=
       - PROVIDERKEYS_TELERIVETPROJECTID=
       - PROVIDERSOURCE_FROMDATABASE=disabled
